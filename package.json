@@ -1,0 +1,62 @@
+{
+  "name": "meetupapp",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "a": "react-native run-android",
+    "l": "react-native log-android",
+    "b": "cd android && ./gradlew clean && ./gradlew assembleRelease",
+    "ai": "cd android/app/build/outputs/apk/release && adb install app-release.apk",
+    "bu": "cd android && ./gradlew clean && ./gradlew bundleRelease",
+    "c": "cd android && ./gradlew clean"
+  },
+  "dependencies": {
+    "@react-native-community/datetimepicker": "^2.1.0",
+    "@types/lodash": "^4.14.144",
+    "@types/react-native-vector-icons": "^6.4.4",
+    "@types/react-redux": "^7.1.5",
+    "@types/redux": "^3.6.0",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "react": "16.9.0",
+    "react-native": "0.61.3",
+    "react-native-gesture-handler": "^1.5.0",
+    "react-native-reanimated": "^1.4.0",
+    "react-native-sqlite-2": "^3.0.1",
+    "react-native-table-component": "^1.2.1",
+    "react-native-vector-icons": "^6.6.0",
+    "react-navigation": "^4.0.10",
+    "react-navigation-stack": "^1.10.3",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4",
+    "tcomb-form-native": "^0.6.20"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/runtime": "^7.6.2",
+    "@react-native-community/eslint-config": "^0.0.5",
+    "@types/jest": "^24.0.18",
+    "@types/react-native": "^0.60.21",
+    "@types/react-test-renderer": "16.9.0",
+    "babel-jest": "^24.9.0",
+    "jest": "^24.9.0",
+    "metro-react-native-babel-preset": "^0.56.0",
+    "react-test-renderer": "16.9.0",
+    "typescript": "^3.6.3"
+  },
+  "jest": {
+    "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}
