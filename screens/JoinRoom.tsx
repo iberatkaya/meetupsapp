@@ -662,7 +662,7 @@ const styles = StyleSheet.create({
     mainView: {
         backgroundColor: '#f6f6ff',
         paddingTop: 4,
-        marginHorizontal: 4,
+        paddingHorizontal: 4,
         height: height,
         flex: 1
     },

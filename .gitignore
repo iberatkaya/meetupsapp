@@ -3,6 +3,7 @@
 .DS_Store
 
 android/app/src/main/AndroidManifest.xml
+android/gradle.properties
 
 # Xcode
 #

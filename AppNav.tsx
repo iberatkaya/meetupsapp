@@ -20,7 +20,7 @@ const Stack = createStackNavigator({
     defaultNavigationOptions: {
         headerTintColor: 'white',
         headerStyle: {
-            backgroundColor: '#a5bdef',
+            backgroundColor: 'rgb(157,201,255)',
             elevation: 2
         }
     }
@@ -39,7 +39,7 @@ const Draw = createDrawerNavigator({
     contentComponent:
         (props) => (
             <ScrollView>
-                <View style={{ height: height * 0.25, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ marginBottom: 4, height: height * 0.25, alignItems: 'center', justifyContent: 'center' }}>
                     <Image
                         source={require('./assets/header.png')}
                         style={{ width: width * 0.8, height: height * 0.25 }}

@@ -82,8 +82,8 @@ class History extends React.Component<Props, State>{
                     {this.props.keys.length > 0 ?
                         this.table()
                         :
-                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Text style={{ fontSize: 24, textAlign: 'center' }}>Your history is empty :(</Text>
+                        <View style={{ marginTop: 6, alignItems: 'center', justifyContent: 'center' }}>
+                            <Text style={{ fontSize: 24, textAlign: 'center' }}>Your history is empty.</Text>
                         </View>
                     }
                 </ScrollView>
@@ -96,9 +96,9 @@ const styles = StyleSheet.create({
     mainView: {
         backgroundColor: '#f6f6ff',
         height: '100%',
-        marginHorizontal: 4,
+        paddingHorizontal: 4,
         flex: 1,
-        marginTop: 4
+        paddingTop: 4
     }
 });
 

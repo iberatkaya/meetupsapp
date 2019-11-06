@@ -428,7 +428,7 @@ class CreateRoom extends React.Component<Props, State>{
 const styles = StyleSheet.create({
     mainView: {
         paddingTop: 4,
-        marginHorizontal: 4,
+        paddingHorizontal: 4,
         height: height,
         backgroundColor: '#f6f6ff',
         flex: 1

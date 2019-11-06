@@ -126,7 +126,7 @@ class Home extends React.Component<Props, State>{
     render() {
         return (
             <View style={styles.mainView}>
-                <StatusBar backgroundColor="rgb(150, 150, 255)" />
+                <StatusBar backgroundColor="rgb(127,181,255)" />
                 <ScrollView>
                     <TouchableOpacity
                         style={styles.createFormButton}
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: '10%',
         marginVertical: '6%',
         borderRadius: 40,
-        backgroundColor: 'rgb(165, 165, 255)'
+        backgroundColor: 'rgb(165, 200, 255)'
     },
     joinFormButton: {
         alignSelf: 'center',
