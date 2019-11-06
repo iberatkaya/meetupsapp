@@ -42,7 +42,6 @@ const optionskey = {
     auto: 'none',
     fields: {
         key: {
-            label: 'Key',
             error: 'Please enter a key.',
             placeholder: 'Enter a url or a key',
             autoComplete: 'off'
@@ -124,6 +123,10 @@ class JoinRoom extends React.Component<Props, State>{
             loading: true
         };
     }
+
+    static navigationOptions = () => ({
+        headerTitle: 'Join Room'
+    });
 
     fetchPeople = async () => {
         let res = await fetch('http://ibkmeetup.herokuapp.com/api/' + this.state.key, {
@@ -491,7 +494,7 @@ class JoinRoom extends React.Component<Props, State>{
                     if (resjson !== null) {
                         let date = new Date().getTime();
                         db.transaction((tx: any) => {
-                            tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [resjson.key, date], () => {
+                            tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [this.state.key, date], () => {
                                 Clipboard.setString(resjson.key);
                                 this.props.addKey({ key: this.state.key, date: date });
                                 ToastAndroid.show('Submitted and copied\nkey to clipboard', ToastAndroid.LONG);
@@ -551,6 +554,7 @@ class JoinRoom extends React.Component<Props, State>{
     enterkey = () => {
         return (
             <>
+                <Text style={{paddingLeft: 8, fontSize: 18}}>Key</Text>
                 <Form
                     options={optionskey}
                     type={EnterStruct}
@@ -585,10 +589,12 @@ class JoinRoom extends React.Component<Props, State>{
 
     intersectionsList = () => {
         let intersections = this.state.intersections;
+        if(intersections.length === 0)
+            return (<View/>);
         return (
             <View style={styles.intersectionList}>
                 <Text style={styles.intersectionTitle}>Intersections</Text>
-                {intersections.map((item, index) => {
+                {intersections.map((item) => {
                     return (
                         <View>
                             <Text style={styles.intersectionText}>{item.occurance} people are available at {moment(new Date(item.start)).format('MMM DD, YYYY HH:mm')} - {moment(new Date(item.end)).format('MMM DD, YYYY HH:mm')}</Text>
@@ -599,6 +605,16 @@ class JoinRoom extends React.Component<Props, State>{
         )
     }
 
+    loadingComp = () => {
+        return (
+            <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ padding: 24, borderRadius: 24, backgroundColor: 'rgba(165,189,239, 0.65)' }}>
+                    <ActivityIndicator size={55} color='red' />
+                </View>
+            </View>
+        );
+    }
+    
     render() {
         if (this.state.key === 'NOAPIKEY')
             return (
@@ -626,6 +642,12 @@ class JoinRoom extends React.Component<Props, State>{
                     {this.intersectionsList()}
                     {this.userDateComp()}
                 </ScrollView>
+                {
+                    this.state.clickable ?
+                        <View />
+                        :
+                        this.loadingComp()
+                }
                 {this.floatingButton()}
                 {this.state.showDateStart && this.datePicker(this.state.index, 'date', 'start')}
                 {this.state.showDateEnd && this.datePicker(this.state.index, 'date', 'end')}
@@ -755,12 +777,14 @@ export default connect(mapStateToProps, mapDispatchToProps)(JoinRoom);
 stylesheet.textbox.normal.color = '#000000';
 stylesheet.textbox.normal.borderColor = "#000000";
 stylesheet.textbox.normal.borderWidth = 0;
+stylesheet.textbox.normal.borderRadius = 0;
 stylesheet.textbox.normal.borderBottomWidth = 1;
 stylesheet.textbox.normal.fontSize = 18;
 stylesheet.textbox.normal.paddingHorizontal = 4;
 stylesheet.textbox.error.color = '#000000';
 stylesheet.textbox.error.borderColor = "#D00000";
 stylesheet.textbox.error.borderWidth = 0;
+stylesheet.textbox.error.borderRadius = 0;
 stylesheet.textbox.error.borderBottomWidth = 1;
 stylesheet.textbox.error.fontSize = 18;
 stylesheet.textbox.error.paddingHorizontal = 4;

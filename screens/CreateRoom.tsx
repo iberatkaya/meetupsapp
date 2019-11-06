@@ -1,5 +1,5 @@
 import React, { createRef } from 'react';
-import { View, Text, ScrollView, Clipboard, TouchableOpacity, StatusBar, Dimensions, ToastAndroid, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Clipboard, TouchableOpacity, StatusBar, Dimensions, ToastAndroid, StyleSheet, ActivityIndicator } from 'react-native';
 import { NavigationStackProp } from 'react-navigation-stack';
 import moment from 'moment';
 import { Header } from 'react-navigation-stack';
@@ -391,14 +391,30 @@ class CreateRoom extends React.Component<Props, State>{
         );
     }
 
+    loadingComp = () => {
+        return (
+            <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ padding: 24, borderRadius: 24, backgroundColor: 'rgba(165,189,239, 0.65)' }}>
+                    <ActivityIndicator size={55} color='red' />
+                </View>
+            </View>
+        );
+    }
+
 
     render() {
         return (
             <View style={styles.mainView}>
+                {this.formRoomComp()}
                 <ScrollView>
-                    {this.formRoomComp()}
                     {this.datesComp()}
                 </ScrollView>
+                {
+                    this.state.clickable ?
+                        <View />
+                        :
+                        this.loadingComp()
+                }
                 {this.floatingButton()}
                 {this.state.showDateStart && this.datePicker(this.state.index, 'date', 'start')}
                 {this.state.showDateEnd && this.datePicker(this.state.index, 'date', 'end')}
@@ -466,12 +482,14 @@ export default connect(mapStateToProps, mapDispatchToProps)(CreateRoom);
 stylesheet.textbox.normal.color = '#000000';
 stylesheet.textbox.normal.borderColor = "#000000";
 stylesheet.textbox.normal.borderWidth = 0;
+stylesheet.textbox.normal.borderRadius = 0;
 stylesheet.textbox.normal.borderBottomWidth = 1;
 stylesheet.textbox.normal.fontSize = 18;
 stylesheet.textbox.normal.paddingHorizontal = 4;
 stylesheet.textbox.error.color = '#000000';
 stylesheet.textbox.error.borderColor = "#D00000";
 stylesheet.textbox.error.borderWidth = 0;
+stylesheet.textbox.error.borderRadius = 0;
 stylesheet.textbox.error.borderBottomWidth = 1;
 stylesheet.textbox.error.fontSize = 18;
 stylesheet.textbox.error.paddingHorizontal = 4;
