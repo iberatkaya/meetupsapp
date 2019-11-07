@@ -112,6 +112,19 @@ class CreateRoom extends React.Component<Props, State>{
         return rounded;
     }
 
+    findMinDate = () => {
+        let dates = this.state.dates;
+        let max = 0;
+        for(let i=0; i<dates.length; i++){
+            if(i == 0)
+                max = dates[i].endDate.getTime();
+            if(max < dates[i].endDate.getTime())
+                max = dates[i].endDate.getTime();
+        }
+        console.log('max date: '+ moment(new Date(max)).format("MMM DD, YYYY, H:mm") +'\n');
+        return new Date(max);
+    }
+
     datePicker = (index: number, mode: string, type: string) => {
         if (mode === 'date' && type == 'start') {
             return (
@@ -123,7 +136,7 @@ class CreateRoom extends React.Component<Props, State>{
                         }
                         this.dateChanger(new Date(dateevent.nativeEvent.timestamp), index, mode, type);
                     }}
-                    minimumDate={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1, 0, 0)}
+                    minimumDate={this.findMinDate()}
                     mode="date"
                     value={this.state.dates[index].startDate}
                 />
@@ -153,7 +166,9 @@ class CreateRoom extends React.Component<Props, State>{
                             this.setState({ showTimeStart: false });
                             return;
                         }
-                        this.dateChanger(new Date(dateevent.nativeEvent.timestamp), index, mode, type);
+                        let olddate = this.state.dates[index].startDate;
+                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(),  new Date(dateevent.nativeEvent.timestamp).getMinutes());
+                        this.dateChanger(date, index, mode, type);
                     }}
                     is24Hour={true}
                     mode="time"
@@ -168,8 +183,10 @@ class CreateRoom extends React.Component<Props, State>{
                         if (dateevent.type === "dismissed") {
                             this.setState({ showTimeEnd: false });
                             return;
-                        }
-                        this.dateChanger(new Date(dateevent.nativeEvent.timestamp), index, mode, type);
+                        }                        
+                        let olddate = this.state.dates[index].endDate;
+                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(),  new Date(dateevent.nativeEvent.timestamp).getMinutes());
+                        this.dateChanger(date, index, mode, type);
                     }}
                     is24Hour={true}
                     mode="time"
@@ -361,10 +378,10 @@ class CreateRoom extends React.Component<Props, State>{
                         let date = new Date().getTime();
                         db.transaction((tx: any) => {
                             tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [resjson.key, date], () => {
-                                Clipboard.setString(resjson.key);
+                                Clipboard.setString('https://ibkmeetup.herokuapp.com/api/' + resjson.key);
                                 this.props.addKey({ key: resjson.key, date: date });
                                 this.props.navigation.pop();
-                                ToastAndroid.show('Submitted and copied\nkey to clipboard', ToastAndroid.LONG);
+                                ToastAndroid.show('Copied key to clipboard', ToastAndroid.LONG);
                             }, (err: any) => { console.log(err); });
                         });
                     }
@@ -403,6 +420,7 @@ class CreateRoom extends React.Component<Props, State>{
 
 
     render() {
+        this.findMinDate();
         return (
             <View style={styles.mainView}>
                 {this.formRoomComp()}

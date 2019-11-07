@@ -1,4 +1,4 @@
-package com.meetupapp;
+package com.kaya.meetupapp;
 
 import android.os.Bundle; 
 import com.facebook.react.ReactActivity;

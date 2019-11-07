@@ -234,11 +234,25 @@ class JoinRoom extends React.Component<Props, State>{
                 }
             }
             if (newel.occurance > 1) {
-                newel.end += 55000; //Round this number too?
                 newarr.push(newel);
             }
         }
-        return newarr;
+        for(let i=0; i<newarr.length; i++){
+            for(let j=0; j<newarr[i].personid.length-1; j++){
+                let person1 = newarr[i].personid[j];
+                for(let k=j+1; k<newarr[i].personid.length; k++){
+                    let person2 = newarr[i].personid[k];
+                    if(person1 === person2)
+                        newarr[i].occurance--;
+                }
+            }
+        }
+        let finalarray = [];
+        for(let i=0; i<newarr.length; i++){
+            if(newarr[i].occurance > 1)
+                finalarray.push(newarr[i]);
+        }
+        return finalarray;
     }
 
     roundDate = (date: Date) => {
@@ -288,7 +302,9 @@ class JoinRoom extends React.Component<Props, State>{
                             this.setState({ showTimeStart: false });
                             return;
                         }
-                        this.dateChanger(new Date(dateevent.nativeEvent.timestamp), index, mode, type);
+                        let olddate = this.state.dates[index].startDate;
+                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(),  new Date(dateevent.nativeEvent.timestamp).getMinutes());
+                        this.dateChanger(date, index, mode, type);
                     }}
                     is24Hour={true}
                     mode="time"
@@ -304,7 +320,9 @@ class JoinRoom extends React.Component<Props, State>{
                             this.setState({ showTimeEnd: false });
                             return;
                         }
-                        this.dateChanger(new Date(dateevent.nativeEvent.timestamp), index, mode, type);
+                        let olddate = this.state.dates[index].endDate;
+                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(),  new Date(dateevent.nativeEvent.timestamp).getMinutes());
+                        this.dateChanger(date, index, mode, type);
                     }}
                     is24Hour={true}
                     mode="time"
@@ -495,9 +513,9 @@ class JoinRoom extends React.Component<Props, State>{
                         let date = new Date().getTime();
                         db.transaction((tx: any) => {
                             tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [this.state.key, date], () => {
-                                Clipboard.setString(resjson.key);
+                                Clipboard.setString('https://ibkmeetup.herokuapp.com/api/' + resjson.key);
                                 this.props.addKey({ key: this.state.key, date: date });
-                                ToastAndroid.show('Submitted and copied\nkey to clipboard', ToastAndroid.LONG);
+                                ToastAndroid.show('Copied key to clipboard', ToastAndroid.LONG);
                                 this.props.navigation.pop();
                             }, (err: any) => { console.log(err); });
                         });
@@ -597,7 +615,7 @@ class JoinRoom extends React.Component<Props, State>{
                 {intersections.map((item) => {
                     return (
                         <View>
-                            <Text style={styles.intersectionText}>{item.occurance} people are available at {moment(new Date(item.start)).format('MMM DD, YYYY HH:mm')} - {moment(new Date(item.end)).format('MMM DD, YYYY HH:mm')}</Text>
+                            <Text style={styles.intersectionText}>{item.occurance} people are available at {moment(this.roundDate(new Date(item.start))).format('MMM DD, YYYY HH:mm')} - {moment(this.roundDate(new Date(item.end))).format('MMM DD, YYYY HH:mm')}</Text>
                         </View>
                     )
                 })}
@@ -638,9 +656,9 @@ class JoinRoom extends React.Component<Props, State>{
             <View style={styles.mainView}>
                 {this.roomTitleComp()}
                 <ScrollView>
-                    {this.peopleComp()}
-                    {this.intersectionsList()}
                     {this.userDateComp()}
+                    {this.intersectionsList()}
+                    {this.peopleComp()}
                 </ScrollView>
                 {
                     this.state.clickable ?

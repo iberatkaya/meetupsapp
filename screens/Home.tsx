@@ -41,11 +41,11 @@ class Home extends React.Component<Props, State>{
     }
 
 
-    static navigationOptions = ({navigation} : Navopt) => ({
+    static navigationOptions = ({ navigation }: Navopt) => ({
         headerTitle: 'MeetUp',
         headerLeft: (
             <TouchableOpacity
-                onPress={() => {navigation.openDrawer();}}
+                onPress={() => { navigation.openDrawer(); }}
             >
                 <View style={{ marginLeft: 12, padding: 4 }}>
                     <Icon name="menu" size={28} color='white' />
@@ -80,7 +80,7 @@ class Home extends React.Component<Props, State>{
 
     keyCell = (data: string) => (
         <TouchableOpacity
-            style={{marginLeft: 4}}
+            style={{ marginLeft: 4 }}
             onLongPress={() => {
                 Clipboard.setString('http://ibkmeetup.herokuapp.com/' + data);
                 ToastAndroid.show('Copied to clipboard', ToastAndroid.LONG);
@@ -96,14 +96,14 @@ class Home extends React.Component<Props, State>{
 
     reverseOfArray = (array: Array<History>) => {
         let array2: Array<History> = [];
-        for(let i=array.length-1; i>=0; i--)
+        for (let i = array.length - 1; i >= 0; i--)
             array2.push(array[i]);
         return array2;
-    } 
+    }
 
     table = () => {
         return (
-            <View style={{marginHorizontal: 6, marginTop: 4}}>
+            <View style={{ marginHorizontal: 6, marginTop: 4 }}>
                 <Text style={{ color: '#444', marginLeft: 4, fontSize: 16, marginBottom: 4 }}>Recent History</Text>
                 <Table borderStyle={{ borderWidth: 1, borderColor: "#ccc" }}  >
                     <Row data={['Key', 'Date']} style={{ height: 26 }} textStyle={{ fontSize: 15, paddingLeft: 4, color: 'black' }} />
@@ -128,27 +128,29 @@ class Home extends React.Component<Props, State>{
             <View style={styles.mainView}>
                 <StatusBar backgroundColor="rgb(127,181,255)" />
                 <ScrollView>
-                    <TouchableOpacity
-                        style={styles.createFormButton}
-                        onPress={() => {
-                            this.props.navigation.navigate('CreateRoom');
-                        }}
-                    >
-                        <Text style={styles.formButtonText}>Create Room</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.joinFormButton}
-                        onPress={() => {
-                            this.props.navigation.navigate('JoinRoom', {key: 'NOAPIKEY'});
-                        }}
-                    >
-                        <Text style={styles.formButtonText}>Join Room</Text>
-                    </TouchableOpacity>
-                    {this.props.keys.length > 0 ?
-                        this.table()
-                        :
-                        <View />
-                    }
+                    <View style={{ alignSelf: 'center' }}>
+                        <TouchableOpacity
+                            style={styles.createFormButton}
+                            onPress={() => {
+                                this.props.navigation.navigate('CreateRoom');
+                            }}
+                        >
+                            <Icon name="plus-circle" size={32} color="white" style={{marginRight: 8}} />
+                            <Text style={styles.formButtonText}>Create a room</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ alignSelf: 'center' }}>
+                        <TouchableOpacity
+                            style={styles.joinFormButton}
+                            onPress={() => {
+                                this.props.navigation.navigate('JoinRoom', { key: 'NOAPIKEY' });
+                            }}
+                        >
+                            <Icon name="send-circle" size={32} color="white" style={{marginRight: 12}} />
+                            <Text style={styles.formButtonText}>Join a room</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {this.table()}
                 </ScrollView>
             </View>
         );
@@ -162,19 +164,19 @@ const styles = StyleSheet.create({
         flex: 1
     },
     createFormButton: {
-        alignSelf: 'center',
-        paddingVertical: '8%',
-        paddingHorizontal: '10%',
+        flexDirection: 'row',
+        paddingVertical: '4%',
+        paddingHorizontal: '8%',
         marginVertical: '6%',
-        borderRadius: 40,
+        borderRadius: 12,
         backgroundColor: 'rgb(165, 200, 255)'
     },
     joinFormButton: {
-        alignSelf: 'center',
-        paddingVertical: '8%',
-        paddingHorizontal: '12%',
-        marginBottom: '6%',
-        borderRadius: 40,
+        flexDirection: 'row',
+        paddingVertical: '4%',
+        paddingHorizontal: '10%',
+        marginBottom: '4%',
+        borderRadius: 12,
         backgroundColor: 'rgb(255, 160, 170)'
     },
     formButtonText: {

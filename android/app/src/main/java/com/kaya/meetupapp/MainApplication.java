@@ -1,4 +1,4 @@
-package com.meetupapp;
+package com.kaya.meetupapp;
 
 import android.app.Application;
 import android.content.Context;
