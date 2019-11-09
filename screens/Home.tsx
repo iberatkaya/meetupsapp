@@ -133,7 +133,7 @@ class Home extends React.Component<Props, State>{
         return (
             <View style={styles.ad}>
                 <AdMobBanner
-                    adSize="smartBanner"
+                    adSize="fullBanner"
                     adUnitID={bannerid}
                     onFailedToLoad={(m: string) => console.log(m)}
                     onLoad={() => { this.setState({ loadedAd: true }); }}
@@ -142,14 +142,12 @@ class Home extends React.Component<Props, State>{
         );
     }
 
-
     mainViewBottomPadding = () => {
         if(this.state.loadedAd)
-            return 54;
+            return 62;
         else
             return 0;
     }
-
 
     render() {
         return (

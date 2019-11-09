@@ -649,27 +649,25 @@ class JoinRoom extends React.Component<Props, State>{
         );
     }
 
-
     mainViewBottomPadding = () => {
-        console.log(this.state.loadedAd);
         if(this.state.loadedAd)
-            return 54;
+            return 62;
         else
             return 0;
     }
 
     floatingButtonBottom = () => {
         if(this.state.loadedAd)
-            return 64;
+            return 66;
         else
             return 22;
     }
-    
+
     ad = () => {
         return (
             <View style={styles.ad}>
                 <AdMobBanner
-                    adSize="smartBanner"
+                    adSize="fullBanner"
                     adUnitID={bannerid}
                     onFailedToLoad={(m: string) => console.log(m)}
                     onLoad={() => { 
