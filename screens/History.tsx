@@ -35,14 +35,14 @@ class History extends React.Component<Props, State>{
         <TouchableOpacity
             style={{marginLeft: 4}}
             onLongPress={() => {
-                Clipboard.setString('http://ibkmeetup.herokuapp.com/' + data);
+                Clipboard.setString('https://www.meetupswithfriends.com/' + data);
                 ToastAndroid.show('Copied to clipboard', ToastAndroid.LONG);
             }}
             onPress={() => {
                 this.props.navigation.navigate('JoinRoom', { key: data });
             }}>
             <View>
-                <Text style={{ fontSize: 14, color: 'rgb(0, 120, 255)', textDecorationLine: 'underline' }}>{data.substring(0, 10) + '...'}</Text>
+                <Text style={{ fontSize: 14, color: 'rgb(0, 120, 255)', textDecorationLine: 'underline', marginLeft: 4 }}>{data.substring(0, 12) + '...'}</Text>
             </View>
         </TouchableOpacity>
     );

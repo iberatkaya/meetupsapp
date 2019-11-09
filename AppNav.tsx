@@ -1,21 +1,26 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Dimensions, StyleSheet, Image, Linking } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createDrawerNavigator } from 'react-navigation-drawer'
 import HomeScreen from './screens/Home';
 import CreateRoomScreen from './screens/CreateRoom';
 import JoinRoomScreen from './screens/JoinRoom';
 import HistoryScreen from './screens/History';
+import HelpScreen from './screens/Help';
+import DeepLinkProxyScreen from './screens/DeepLinkProxy';
 
 const { width, height } = Dimensions.get('window');
 
 const Stack = createStackNavigator({
     Home: HomeScreen,
     CreateRoom: CreateRoomScreen,
-    JoinRoom: JoinRoomScreen,
-    History: HistoryScreen
+    JoinRoom: {
+        screen: JoinRoomScreen,
+    },
+    History: HistoryScreen,
+    Help: HelpScreen
 }, {
     defaultNavigationOptions: {
         headerTintColor: 'white',
@@ -29,10 +34,8 @@ const Stack = createStackNavigator({
 
 const Draw = createDrawerNavigator({
     Home: {
-        screen: Stack
-    },
-    History: {
-        screen: HistoryScreen
+        screen: Stack,
+        path: 'https://'
     }
 }, {
     drawerWidth: width * 0.8,
@@ -52,6 +55,15 @@ const Draw = createDrawerNavigator({
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name="history" size={24} color="#aaa" />
                         <Text style={{ fontSize: 14, fontWeight: 'bold', paddingLeft: 32, color: 'black' }}>History</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.items}
+                    onPress={() => { props.navigation.navigate('Help') }}
+                >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon name="help-circle-outline" size={24} color="#aaa" />
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', paddingLeft: 32, color: 'black' }}>Help</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -86,4 +98,16 @@ const styles = StyleSheet.create({
     }
 });
 
-export default createAppContainer(Draw);
+const Enter = createSwitchNavigator({
+    Home: Draw,
+    DeepLinkProxy1: {
+        screen: DeepLinkProxyScreen, 
+        path: 'meetupswithfriends.com/:key'
+    },
+    DeepLinkProxy2: {
+        screen: DeepLinkProxyScreen, 
+        path: 'www.meetupswithfriends.com/:key'
+    }
+})
+
+export default createAppContainer(Enter);

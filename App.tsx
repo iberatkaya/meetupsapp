@@ -10,7 +10,7 @@ class App extends React.Component{
   render(){
     return(
       <Provider store={ store }>
-        <AppNav/>
+        <AppNav uriPrefix="https://"/>
       </Provider>
     );
   }

@@ -112,19 +112,6 @@ class CreateRoom extends React.Component<Props, State>{
         return rounded;
     }
 
-    findMinDate = () => {
-        let dates = this.state.dates;
-        let max = 0;
-        for(let i=0; i<dates.length; i++){
-            if(i == 0)
-                max = dates[i].endDate.getTime();
-            if(max < dates[i].endDate.getTime())
-                max = dates[i].endDate.getTime();
-        }
-        console.log('max date: '+ moment(new Date(max)).format("MMM DD, YYYY, H:mm") +'\n');
-        return new Date(max);
-    }
-
     datePicker = (index: number, mode: string, type: string) => {
         if (mode === 'date' && type == 'start') {
             return (
@@ -134,9 +121,11 @@ class CreateRoom extends React.Component<Props, State>{
                             this.setState({ showDateStart: false });
                             return;
                         }
-                        this.dateChanger(new Date(dateevent.nativeEvent.timestamp), index, mode, type);
+                        let olddate = this.state.dates[index].startDate;
+                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(),  olddate.getMinutes());
+                        this.dateChanger(date, index, mode, type);
                     }}
-                    minimumDate={this.findMinDate()}
+                    minimumDate={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1, 0, 0)}
                     mode="date"
                     value={this.state.dates[index].startDate}
                 />
@@ -150,7 +139,9 @@ class CreateRoom extends React.Component<Props, State>{
                             this.setState({ showDateEnd: false });
                             return;
                         }
-                        this.dateChanger(new Date(dateevent.nativeEvent.timestamp), index, mode, type);
+                        let olddate = this.state.dates[index].endDate;
+                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(),  olddate.getMinutes());
+                        this.dateChanger(date, index, mode, type);
                     }}
                     minimumDate={this.state.dates[index].startDate}
                     mode="date"
@@ -281,7 +272,7 @@ class CreateRoom extends React.Component<Props, State>{
     form = createRef<typeof Form>();
     formComp = () => {
         return (
-            <View style={{ marginHorizontal: 24 }}>
+            <View style={{ marginHorizontal: 8, paddingHorizontal: 20, borderRadius: 24, paddingTop: 8, backgroundColor: '#eee', marginVertical: 6 }}>
                 <Form
                     value={this.state.formvalue}
                     onChange={(val: object) => { this.setState({ formvalue: val }); }}
@@ -365,7 +356,7 @@ class CreateRoom extends React.Component<Props, State>{
                         return;
                     }
                     this.setState({ clickable: false });
-                    let res = await fetch('https://ibkmeetup.herokuapp.com/api', {
+                    let res = await fetch('https://meetupswithfriends.com/api', {
                         headers: {
                             'Accept': 'application/json',
                             'Content-Type': 'application/json'
@@ -378,7 +369,7 @@ class CreateRoom extends React.Component<Props, State>{
                         let date = new Date().getTime();
                         db.transaction((tx: any) => {
                             tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [resjson.key, date], () => {
-                                Clipboard.setString('https://ibkmeetup.herokuapp.com/api/' + resjson.key);
+                                Clipboard.setString('https://meetupswithfriends.com/api/' + resjson.key);
                                 this.props.addKey({ key: resjson.key, date: date });
                                 this.props.navigation.pop();
                                 ToastAndroid.show('Copied key to clipboard', ToastAndroid.LONG);
@@ -396,7 +387,7 @@ class CreateRoom extends React.Component<Props, State>{
     formroom = createRef<typeof Form>();
     formRoomComp = () => {
         return (
-            <View style={{ marginHorizontal: 24 }}>
+            <View style={{ marginHorizontal: 16, paddingHorizontal: 20, borderRadius: 24, paddingTop: 8, backgroundColor: '#eee', marginVertical: 6 }}>
                 <Form
                     value={this.state.formvalueroom}
                     onChange={(valroom: object) => { this.setState({ formvalueroom: valroom }); }}
@@ -420,7 +411,6 @@ class CreateRoom extends React.Component<Props, State>{
 
 
     render() {
-        this.findMinDate();
         return (
             <View style={styles.mainView}>
                 {this.formRoomComp()}
@@ -455,20 +445,21 @@ const styles = StyleSheet.create({
         paddingLeft: 12,
         paddingRight: 12,
         paddingTop: 6,
-        backgroundColor: 'rgb(235, 235, 255)',
+        backgroundColor: 'rgb(225, 240, 255)',
         borderRadius: 28,
         paddingBottom: 12,
         marginBottom: 6
     },
     dateTimeHeader: {
         textAlign: 'center',
-        color: '#444',
+        color: '#222',
         fontSize: 23,
         borderBottomWidth: 1,
         borderBottomColor: '#bbb',
         marginBottom: 4
     },
     dateTimeText: {
+        textDecorationLine: 'underline',
         fontSize: 19,
         marginBottom: 2
     },
@@ -499,6 +490,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(CreateRoom);
 
 stylesheet.textbox.normal.color = '#000000';
 stylesheet.textbox.normal.borderColor = "#000000";
+stylesheet.textbox.normal.backgroundColor = '#eee';
 stylesheet.textbox.normal.borderWidth = 0;
 stylesheet.textbox.normal.borderRadius = 0;
 stylesheet.textbox.normal.borderBottomWidth = 1;
@@ -506,6 +498,7 @@ stylesheet.textbox.normal.fontSize = 18;
 stylesheet.textbox.normal.paddingHorizontal = 4;
 stylesheet.textbox.error.color = '#000000';
 stylesheet.textbox.error.borderColor = "#D00000";
+stylesheet.textbox.error.backgroundColor = '#eee';
 stylesheet.textbox.error.borderWidth = 0;
 stylesheet.textbox.error.borderRadius = 0;
 stylesheet.textbox.error.borderBottomWidth = 1;

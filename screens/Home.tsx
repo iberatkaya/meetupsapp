@@ -42,7 +42,7 @@ class Home extends React.Component<Props, State>{
 
 
     static navigationOptions = ({ navigation }: Navopt) => ({
-        headerTitle: 'MeetUp',
+        headerTitle: 'MeetUps',
         headerLeft: (
             <TouchableOpacity
                 onPress={() => { navigation.openDrawer(); }}
@@ -82,14 +82,14 @@ class Home extends React.Component<Props, State>{
         <TouchableOpacity
             style={{ marginLeft: 4 }}
             onLongPress={() => {
-                Clipboard.setString('http://ibkmeetup.herokuapp.com/' + data);
+                Clipboard.setString('https://www.meetupswithfriends.com/' + data);
                 ToastAndroid.show('Copied to clipboard', ToastAndroid.LONG);
             }}
             onPress={() => {
                 this.props.navigation.navigate('JoinRoom', { key: data });
             }}>
             <View>
-                <Text style={{ fontSize: 13, color: 'rgb(0, 120, 255)', textDecorationLine: 'underline' }}>{data.substring(0, 14) + '...'}</Text>
+                <Text style={{ fontSize: 14, color: 'rgb(0, 120, 255)', textDecorationLine: 'underline', marginLeft: 4 }}>{data.substring(0, 12) + '...'}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -106,13 +106,13 @@ class Home extends React.Component<Props, State>{
             <View style={{ marginHorizontal: 6, marginTop: 4 }}>
                 <Text style={{ color: '#444', marginLeft: 4, fontSize: 16, marginBottom: 4 }}>Recent History</Text>
                 <Table borderStyle={{ borderWidth: 1, borderColor: "#ccc" }}  >
-                    <Row data={['Key', 'Date']} style={{ height: 26 }} textStyle={{ fontSize: 15, paddingLeft: 4, color: 'black' }} />
+                    <Row data={['Key', 'Date']} style={{ height: 30 }} textStyle={{ fontSize: 16, paddingLeft: 4, color: 'black' }} />
                     {
                         this.reverseOfArray(this.props.keys).slice(0, 5).map((item) => { return [item.key, moment(new Date(item.date)).format('DD.MM.YYYY, HH:mm')]; }).map((rowData, index) => (
-                            <TableWrapper style={{ height: 26, flexDirection: 'row' }} key={index}>
+                            <TableWrapper style={{ height: 28, flexDirection: 'row' }} key={index}>
                                 {
                                     rowData.map((cellData, cellIndex) => (
-                                        <Cell key={cellIndex} data={cellIndex == 0 ? this.keyCell(cellData) : <Text style={{ fontSize: 13, marginLeft: 4 }}>{cellData}</Text>} />
+                                        <Cell key={cellIndex} data={cellIndex == 0 ? this.keyCell(cellData) : <Text style={{ fontSize: 14, marginLeft: 4 }}>{cellData}</Text>} />
                                     ))
                                 }
                             </TableWrapper>
@@ -165,17 +165,17 @@ const styles = StyleSheet.create({
     },
     createFormButton: {
         flexDirection: 'row',
-        paddingVertical: '4%',
+        paddingVertical: '5%',
         paddingHorizontal: '8%',
-        marginVertical: '6%',
+        marginVertical: '8%',
         borderRadius: 12,
         backgroundColor: 'rgb(165, 200, 255)'
     },
     joinFormButton: {
         flexDirection: 'row',
-        paddingVertical: '4%',
+        paddingVertical: '5%',
         paddingHorizontal: '10%',
-        marginBottom: '4%',
+        marginBottom: '8%',
         borderRadius: 12,
         backgroundColor: 'rgb(255, 160, 170)'
     },

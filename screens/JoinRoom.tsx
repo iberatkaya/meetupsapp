@@ -129,7 +129,7 @@ class JoinRoom extends React.Component<Props, State>{
     });
 
     fetchPeople = async () => {
-        let res = await fetch('http://ibkmeetup.herokuapp.com/api/' + this.state.key, {
+        let res = await fetch('https://meetupswithfriends.com/api/' + this.state.key, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -270,7 +270,9 @@ class JoinRoom extends React.Component<Props, State>{
                             this.setState({ showDateStart: false });
                             return;
                         }
-                        this.dateChanger(new Date(dateevent.nativeEvent.timestamp), index, mode, type);
+                        let olddate = this.state.dates[index].startDate;
+                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(),  olddate.getMinutes());
+                        this.dateChanger(date, index, mode, type);
                     }}
                     minimumDate={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1, 0, 0)}
                     mode="date"
@@ -286,7 +288,9 @@ class JoinRoom extends React.Component<Props, State>{
                             this.setState({ showDateEnd: false });
                             return;
                         }
-                        this.dateChanger(new Date(dateevent.nativeEvent.timestamp), index, mode, type);
+                        let olddate = this.state.dates[index].endDate;
+                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(),  olddate.getMinutes());
+                        this.dateChanger(date, index, mode, type);
                     }}
                     minimumDate={this.state.dates[index].startDate}
                     mode="date"
@@ -406,14 +410,14 @@ class JoinRoom extends React.Component<Props, State>{
                                         this.setState({ showDateStart: true, index: index });
                                     }}
                                 >
-                                    <Text style={styles.dateTimeText}>Date: {moment(item.startDate).format("MMM DD, YYYY")}</Text>
+                                    <Text style={styles.userDateTimeText}>Date: {moment(item.startDate).format("MMM DD, YYYY")}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() => {
                                         this.setState({ showTimeStart: true, index: index });
                                     }}
                                 >
-                                    <Text style={styles.dateTimeText}>Time: {moment(item.startDate).format("HH:mm")}</Text>
+                                    <Text style={styles.userDateTimeText}>Time: {moment(item.startDate).format("HH:mm")}</Text>
                                 </TouchableOpacity>
                             </View>
                             <Text style={styles.dateTimeHeader}>End Date</Text>
@@ -423,14 +427,14 @@ class JoinRoom extends React.Component<Props, State>{
                                         this.setState({ showDateEnd: true, index: index });
                                     }}
                                 >
-                                    <Text style={styles.dateTimeText}>Date: {moment(item.endDate).format("MMM DD, YYYY")}</Text>
+                                    <Text style={styles.userDateTimeText}>Date: {moment(item.endDate).format("MMM DD, YYYY")}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() => {
                                         this.setState({ showTimeEnd: true, index: index });
                                     }}
                                 >
-                                    <Text style={styles.dateTimeText}>Time: {moment(item.endDate).format("HH:mm")}</Text>
+                                    <Text style={styles.userDateTimeText}>Time: {moment(item.endDate).format("HH:mm")}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -500,7 +504,7 @@ class JoinRoom extends React.Component<Props, State>{
                         return;
                     }
                     this.setState({ clickable: false });
-                    let res = await fetch('https://ibkmeetup.herokuapp.com/api/' + this.state.key, {
+                    let res = await fetch('https://meetupswithfriends.com/api/' + this.state.key, {
                         headers: {
                             'Accept': 'application/json',
                             'Content-Type': 'application/json'
@@ -513,7 +517,7 @@ class JoinRoom extends React.Component<Props, State>{
                         let date = new Date().getTime();
                         db.transaction((tx: any) => {
                             tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [this.state.key, date], () => {
-                                Clipboard.setString('https://ibkmeetup.herokuapp.com/api/' + resjson.key);
+                                Clipboard.setString('https://meetupswithfriends.com/api/' + this.state.key);
                                 this.props.addKey({ key: this.state.key, date: date });
                                 ToastAndroid.show('Copied key to clipboard', ToastAndroid.LONG);
                                 this.props.navigation.pop();
@@ -531,7 +535,7 @@ class JoinRoom extends React.Component<Props, State>{
     form = createRef<typeof Form>();
     formComp = () => {
         return (
-            <View style={{ marginHorizontal: 24 }}>
+            <View style={{ marginHorizontal: 2, paddingHorizontal: 12, borderRadius: 24, paddingTop: 4, backgroundColor: '#eee', marginVertical: 6 }}>
                 <Form
                     value={this.state.formvalue}
                     onChange={(valroom: object) => { this.setState({ formvalue: valroom }); }}
@@ -568,30 +572,33 @@ class JoinRoom extends React.Component<Props, State>{
         );
     }
 
+    stringAfterSlash = (str: string) => {
+        if(!str.includes("/"))
+            return str;
+        let i = str.lastIndexOf('/');
+        return str.slice(i+1, str.length);
+    }
+
     enterform = createRef<typeof Form>();
     enterkey = () => {
         return (
             <>
-                <Text style={{paddingLeft: 8, fontSize: 18}}>Key</Text>
-                <Form
-                    options={optionskey}
-                    type={EnterStruct}
-                    value={this.state.formenter}
-                    onChange={(valroom: object) => { this.setState({ formenter: valroom }); }}
-                    ref={(ref: typeof Form) => { this.enterform = ref; }}
-                    stylesheet={stylesheet}
-                />
+                <View style={{ marginHorizontal: 2, paddingHorizontal: 12, borderRadius: 24, paddingTop: 4, backgroundColor: '#eee', marginVertical: 6 }}>
+                    <Text style={{paddingLeft: 8, fontSize: 18, marginTop: 4, marginBottom: 2}}>Key</Text>
+                    <Form
+                        options={optionskey}
+                        type={EnterStruct}
+                        value={this.state.formenter}
+                        onChange={(valroom: object) => { this.setState({ formenter: valroom }); }}
+                        ref={(ref: typeof Form) => { this.enterform = ref; }}
+                        stylesheet={stylesheet}
+                    />
+                </View>
                 <TouchableOpacity style={styles.floatingButton}
                     onPress={() => {
                         const val = (this.enterform as any).getValue();
                         if (val != null) {
-                            let key: string = val.key;
-                            if (key.includes('http://ibkmeetup.herokuapp.com/')) {
-                                key = val.key.replace('http://ibkmeetup.herokuapp.com/', '')
-                            }
-                            else if (key.includes('ibkmeetup.herokuapp.com/')) {
-                                key = val.key.replace('ibkmeetup.herokuapp.com/', '')
-                            }
+                            let key: string = this.stringAfterSlash(val.key);
                             this.setState({ key: key }, async () => {
                                 await this.fetchPeople();
                             })
@@ -634,6 +641,7 @@ class JoinRoom extends React.Component<Props, State>{
     }
     
     render() {
+        console.log(this.props.navigation.getParam('key'));
         if (this.state.key === 'NOAPIKEY')
             return (
                 <ScrollView contentContainerStyle={styles.mainView}>
@@ -679,7 +687,7 @@ class JoinRoom extends React.Component<Props, State>{
 const styles = StyleSheet.create({
     mainView: {
         backgroundColor: '#f6f6ff',
-        paddingTop: 4,
+        paddingTop: 2,
         paddingHorizontal: 4,
         height: height,
         flex: 1
@@ -694,7 +702,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     intersectionList: {
-        backgroundColor: 'rgb(230, 255, 230)',
+        backgroundColor: 'rgb(220, 245, 220)',
         borderRadius: 24,
         paddingHorizontal: 12,
         paddingVertical: 12,
@@ -712,7 +720,8 @@ const styles = StyleSheet.create({
     },
     peopeInRoom: {
         textAlign: 'center',
-        fontSize: 16
+        fontSize: 16,
+        color: '#444'
     },
     roomTitle: {
         textAlign: 'center',
@@ -736,7 +745,7 @@ const styles = StyleSheet.create({
         paddingLeft: 12,
         paddingRight: 12,
         paddingTop: 6,
-        backgroundColor: 'rgb(235, 235, 255)',
+        backgroundColor: 'rgb(225, 240, 255)',
         borderRadius: 28,
         paddingBottom: 12,
         marginBottom: 6
@@ -745,18 +754,23 @@ const styles = StyleSheet.create({
         paddingLeft: 12,
         paddingRight: 12,
         paddingTop: 6,
-        backgroundColor: 'rgb(255, 230, 230)',
+        backgroundColor: 'rgb(255, 220, 220)',
         borderRadius: 28,
         paddingBottom: 12,
         marginBottom: 6
     },
     dateTimeHeader: {
         textAlign: 'center',
-        color: '#444',
+        color: '#222',
         fontSize: 23,
         borderBottomWidth: 1,
         borderBottomColor: '#bbb',
         marginBottom: 4
+    },
+    userDateTimeText: {
+        fontSize: 19,
+        textDecorationLine: 'underline',
+        marginBottom: 2
     },
     dateTimeText: {
         fontSize: 19,
@@ -794,6 +808,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(JoinRoom);
 
 stylesheet.textbox.normal.color = '#000000';
 stylesheet.textbox.normal.borderColor = "#000000";
+stylesheet.textbox.normal.backgroundColor = '#eee';
 stylesheet.textbox.normal.borderWidth = 0;
 stylesheet.textbox.normal.borderRadius = 0;
 stylesheet.textbox.normal.borderBottomWidth = 1;
@@ -801,6 +816,7 @@ stylesheet.textbox.normal.fontSize = 18;
 stylesheet.textbox.normal.paddingHorizontal = 4;
 stylesheet.textbox.error.color = '#000000';
 stylesheet.textbox.error.borderColor = "#D00000";
+stylesheet.textbox.error.backgroundColor = '#eee';
 stylesheet.textbox.error.borderWidth = 0;
 stylesheet.textbox.error.borderRadius = 0;
 stylesheet.textbox.error.borderBottomWidth = 1;
