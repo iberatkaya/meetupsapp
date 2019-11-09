@@ -6,6 +6,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SplashScreen from 'react-native-splash-screen';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { AdMobBanner } from 'react-native-androide';
+import {bannerid} from './appid';
 import moment from 'moment';
 import { setKeys } from './Actions';
 import SQLite from 'react-native-sqlite-2';
@@ -18,6 +20,7 @@ type Props = {
 };
 
 type State = {
+    loadedAd: boolean
 };
 
 interface History {
@@ -37,6 +40,9 @@ class Home extends React.Component<Props, State>{
 
     constructor(props: any) {
         super(props);
+        this.state = {
+            loadedAd: false
+        };
         this.loadFromDB();
     }
 
@@ -123,9 +129,31 @@ class Home extends React.Component<Props, State>{
         );
     }
 
+    ad = () => {
+        return (
+            <View style={styles.ad}>
+                <AdMobBanner
+                    adSize="smartBanner"
+                    adUnitID={bannerid}
+                    onFailedToLoad={(m: string) => console.log(m)}
+                    onLoad={() => { this.setState({ loadedAd: true }); }}
+                />
+            </View>
+        );
+    }
+
+
+    mainViewBottomPadding = () => {
+        if(this.state.loadedAd)
+            return 54;
+        else
+            return 0;
+    }
+
+
     render() {
         return (
-            <View style={styles.mainView}>
+            <View style={{...styles.mainView, paddingBottom: this.mainViewBottomPadding()}}>
                 <StatusBar backgroundColor="rgb(127,181,255)" />
                 <ScrollView>
                     <View style={{ alignSelf: 'center' }}>
@@ -135,7 +163,7 @@ class Home extends React.Component<Props, State>{
                                 this.props.navigation.navigate('CreateRoom');
                             }}
                         >
-                            <Icon name="plus-circle" size={32} color="white" style={{marginRight: 8}} />
+                            <Icon name="plus-circle" size={32} color="white" style={{ marginRight: 8 }} />
                             <Text style={styles.formButtonText}>Create a room</Text>
                         </TouchableOpacity>
                     </View>
@@ -146,12 +174,13 @@ class Home extends React.Component<Props, State>{
                                 this.props.navigation.navigate('JoinRoom', { key: 'NOAPIKEY' });
                             }}
                         >
-                            <Icon name="send-circle" size={32} color="white" style={{marginRight: 12}} />
+                            <Icon name="send-circle" size={32} color="white" style={{ marginRight: 12 }} />
                             <Text style={styles.formButtonText}>Join a room</Text>
                         </TouchableOpacity>
                     </View>
                     {this.table()}
                 </ScrollView>
+                {this.ad()}
             </View>
         );
     }
@@ -162,6 +191,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#f6f6ff',
         height: '100%',
         flex: 1
+    },
+    ad: {
+        position: 'absolute', 
+        bottom: 0,  
+        width: '100%', 
+        backgroundColor: '#f6f6ff'
     },
     createFormButton: {
         flexDirection: 'row',

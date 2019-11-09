@@ -6,6 +6,8 @@ import { Header } from 'react-navigation-stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SQLite from 'react-native-sqlite-2';
+import { AdMobBanner } from 'react-native-androide';
+import { bannerid } from './appid';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { addKey } from './Actions';
@@ -64,7 +66,8 @@ type State = {
     showTimeEnd: boolean,
     showTimeStart: boolean,
     key: string,
-    clickable: boolean
+    clickable: boolean,
+    loadedAd: boolean
 };
 
 interface Dates {
@@ -97,7 +100,8 @@ class CreateRoom extends React.Component<Props, State>{
             showTimeStart: false,
             showTimeEnd: false,
             key: '',
-            clickable: true
+            clickable: true,
+            loadedAd: false
         };
     }
 
@@ -122,7 +126,7 @@ class CreateRoom extends React.Component<Props, State>{
                             return;
                         }
                         let olddate = this.state.dates[index].startDate;
-                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(),  olddate.getMinutes());
+                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(), olddate.getMinutes());
                         this.dateChanger(date, index, mode, type);
                     }}
                     minimumDate={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1, 0, 0)}
@@ -140,7 +144,7 @@ class CreateRoom extends React.Component<Props, State>{
                             return;
                         }
                         let olddate = this.state.dates[index].endDate;
-                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(),  olddate.getMinutes());
+                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(), olddate.getMinutes());
                         this.dateChanger(date, index, mode, type);
                     }}
                     minimumDate={this.state.dates[index].startDate}
@@ -158,7 +162,7 @@ class CreateRoom extends React.Component<Props, State>{
                             return;
                         }
                         let olddate = this.state.dates[index].startDate;
-                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(),  new Date(dateevent.nativeEvent.timestamp).getMinutes());
+                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(), new Date(dateevent.nativeEvent.timestamp).getMinutes());
                         this.dateChanger(date, index, mode, type);
                     }}
                     is24Hour={true}
@@ -174,9 +178,9 @@ class CreateRoom extends React.Component<Props, State>{
                         if (dateevent.type === "dismissed") {
                             this.setState({ showTimeEnd: false });
                             return;
-                        }                        
+                        }
                         let olddate = this.state.dates[index].endDate;
-                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(),  new Date(dateevent.nativeEvent.timestamp).getMinutes());
+                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(), new Date(dateevent.nativeEvent.timestamp).getMinutes());
                         this.dateChanger(date, index, mode, type);
                     }}
                     is24Hour={true}
@@ -334,20 +338,7 @@ class CreateRoom extends React.Component<Props, State>{
     floatingButton = () => {
         return (
             <TouchableOpacity
-                style={{
-                    elevation: 1,
-                    position: 'absolute',
-                    bottom: 22,
-                    right: 18,
-                    borderWidth: 1,
-                    borderColor: 'rgba(10, 10, 255,0.3)',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 64,
-                    height: 64,
-                    backgroundColor: '#fff',
-                    borderRadius: 100,
-                }}
+                style={{...styles.floatingButton, bottom: this.floatingButtonBottom()}}
                 disabled={!this.state.clickable}
                 onPress={async () => {
                     const value = (this.form as any).getValue();
@@ -356,27 +347,31 @@ class CreateRoom extends React.Component<Props, State>{
                         return;
                     }
                     this.setState({ clickable: false });
-                    let res = await fetch('https://meetupswithfriends.com/api', {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        method: 'POST',
-                        body: JSON.stringify({ name: value.name, dates: this.state.dates, roomtitle: valueroom.room })
-                    });
-                    let resjson = await res.json();
-                    if (resjson !== null) {
-                        let date = new Date().getTime();
-                        db.transaction((tx: any) => {
-                            tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [resjson.key, date], () => {
-                                Clipboard.setString('https://meetupswithfriends.com/api/' + resjson.key);
-                                this.props.addKey({ key: resjson.key, date: date });
-                                this.props.navigation.pop();
-                                ToastAndroid.show('Copied key to clipboard', ToastAndroid.LONG);
-                            }, (err: any) => { console.log(err); });
+                    try{
+                        let res = await fetch('https://meetupswithfriends.com/api', {
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            method: 'POST',
+                            body: JSON.stringify({ name: value.name, dates: this.state.dates, roomtitle: valueroom.room })
                         });
+                        let resjson = await res.json();
+                        if (resjson !== null) {
+                            let date = new Date().getTime();
+                            db.transaction((tx: any) => {
+                                tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [resjson.key, date], () => {
+                                    Clipboard.setString('https://meetupswithfriends.com/api/' + resjson.key);
+                                    this.props.addKey({ key: resjson.key, date: date });
+                                    this.props.navigation.pop();
+                                    ToastAndroid.show('Copied key to clipboard', ToastAndroid.LONG);
+                                }, (err: any) => { console.log(err); });
+                            });
+                        }
+                    }catch(e){
+                        ToastAndroid.show("An error occurred", ToastAndroid.LONG);
+                        this.props.navigation.pop();
                     }
-
                 }}
             >
                 <Icon name="check" size={30} color="rgb(10, 10, 255)" />
@@ -410,9 +405,38 @@ class CreateRoom extends React.Component<Props, State>{
     }
 
 
+    ad = () => {
+        return (
+            <View style={styles.ad}>
+                <AdMobBanner
+                    adSize="smartBanner"
+                    adUnitID={bannerid}
+                    onFailedToLoad={(m: string) => console.log(m)}
+                    onLoad={() => { 
+                        this.setState({loadedAd: true});
+                    }}
+                />
+            </View>
+        );
+    }
+
+    mainViewBottomPadding = () => {
+        if(this.state.loadedAd)
+            return 54;
+        else
+            return 0;
+    }
+
+    floatingButtonBottom = () => {
+        if(this.state.loadedAd)
+            return 64;
+        else
+            return 22;
+    }
+
     render() {
         return (
-            <View style={styles.mainView}>
+            <View style={{...styles.mainView, paddingBottom: this.mainViewBottomPadding()}}>
                 {this.formRoomComp()}
                 <ScrollView>
                     {this.datesComp()}
@@ -428,6 +452,7 @@ class CreateRoom extends React.Component<Props, State>{
                 {this.state.showDateEnd && this.datePicker(this.state.index, 'date', 'end')}
                 {this.state.showTimeStart && this.datePicker(this.state.index, 'time', 'start')}
                 {this.state.showTimeEnd && this.datePicker(this.state.index, 'time', 'end')}
+                {this.ad()}
             </View>
         );
     }
@@ -437,9 +462,27 @@ const styles = StyleSheet.create({
     mainView: {
         paddingTop: 4,
         paddingHorizontal: 4,
-        height: height,
         backgroundColor: '#f6f6ff',
         flex: 1
+    },
+    ad: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        backgroundColor: '#f6f6ff'
+    },
+    floatingButton: {
+        elevation: 1,
+        position: 'absolute',
+        right: 18,
+        borderWidth: 1,
+        borderColor: 'rgba(10, 10, 255,0.3)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 64,
+        height: 64,
+        backgroundColor: '#fff',
+        borderRadius: 100,
     },
     dateCard: {
         paddingLeft: 12,

@@ -4,6 +4,7 @@
 
 android/app/src/main/AndroidManifest.xml
 android/gradle.properties
+screens/appid.tsx
 
 # Xcode
 #

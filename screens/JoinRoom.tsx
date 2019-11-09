@@ -7,6 +7,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SQLite from 'react-native-sqlite-2';
 import { connect } from 'react-redux';
+import { AdMobBanner } from 'react-native-androide';
+import { bannerid } from './appid';
 import { bindActionCreators } from 'redux';
 import { addKey } from './Actions';
 const db = SQLite.openDatabase("history.db", '1.0', '', 1);
@@ -69,7 +71,8 @@ type State = {
     persons: Array<Persons>,
     intersections: Array<Intersections>,
     loading: boolean,
-    formenter: object
+    formenter: object,
+    loadedAd: boolean
 };
 
 interface Intersections {
@@ -120,7 +123,8 @@ class JoinRoom extends React.Component<Props, State>{
             error: false,
             roomTitle: '',
             intersections: [],
-            loading: true
+            loading: true,
+            loadedAd: false
         };
     }
 
@@ -129,31 +133,36 @@ class JoinRoom extends React.Component<Props, State>{
     });
 
     fetchPeople = async () => {
-        let res = await fetch('https://meetupswithfriends.com/api/' + this.state.key, {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            method: 'GET',
-        });
-        let resjson = await res.json();
-        if (resjson.length === 0) {
-            this.setState({ error: true });
-            return;
-        }
-        let persons = [];
-        for (let i = 0; i < resjson.length; i++) {
-            let dates = JSON.parse(resjson[i].dates);
-            let newdates = []
-            for (let j = 0; j < dates.length; j++) {
-                newdates.push({ startDate: new Date(dates[j].startDate), endDate: new Date(dates[j].endDate) });
+        try{
+            let res = await fetch('https://meetupswithfriends.com/api/' + this.state.key, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: 'GET',
+            });
+            let resjson = await res.json();
+            if (resjson.length === 0) {
+                this.setState({ error: true });
+                return;
             }
-            persons.push({ dates: newdates, id: i, name: resjson[i].name });
+            let persons = [];
+            for (let i = 0; i < resjson.length; i++) {
+                let dates = JSON.parse(resjson[i].dates);
+                let newdates = []
+                for (let j = 0; j < dates.length; j++) {
+                    newdates.push({ startDate: new Date(dates[j].startDate), endDate: new Date(dates[j].endDate) });
+                }
+                persons.push({ dates: newdates, id: i, name: resjson[i].name });
+            }
+            let roomTitle = resjson[0].roomtitle;
+            this.setState({ persons: persons, roomTitle: roomTitle, loading: false }, () => {
+                this.calculateAvailableTime();
+            });
+        }catch(e){
+            ToastAndroid.show("An error occurred", ToastAndroid.LONG);
+            this.props.navigation.pop();
         }
-        let roomTitle = resjson[0].roomtitle;
-        this.setState({ persons: persons, roomTitle: roomTitle, loading: false }, () => {
-            this.calculateAvailableTime();
-        });
     }
 
     async componentDidMount() {
@@ -496,7 +505,7 @@ class JoinRoom extends React.Component<Props, State>{
     floatingButton = () => {
         return (
             <TouchableOpacity
-                style={styles.floatingButton}
+                style={{...styles.floatingButton, bottom: this.floatingButtonBottom()}}
                 disabled={!this.state.clickable}
                 onPress={async () => {
                     const value = (this.form as any).getValue();
@@ -639,9 +648,39 @@ class JoinRoom extends React.Component<Props, State>{
             </View>
         );
     }
+
+
+    mainViewBottomPadding = () => {
+        console.log(this.state.loadedAd);
+        if(this.state.loadedAd)
+            return 54;
+        else
+            return 0;
+    }
+
+    floatingButtonBottom = () => {
+        if(this.state.loadedAd)
+            return 64;
+        else
+            return 22;
+    }
+    
+    ad = () => {
+        return (
+            <View style={styles.ad}>
+                <AdMobBanner
+                    adSize="smartBanner"
+                    adUnitID={bannerid}
+                    onFailedToLoad={(m: string) => console.log(m)}
+                    onLoad={() => { 
+                        this.setState({loadedAd: true});
+                    }}
+                />
+            </View>
+        );
+    }
     
     render() {
-        console.log(this.props.navigation.getParam('key'));
         if (this.state.key === 'NOAPIKEY')
             return (
                 <ScrollView contentContainerStyle={styles.mainView}>
@@ -661,7 +700,7 @@ class JoinRoom extends React.Component<Props, State>{
                 </View>
             );
         return (
-            <View style={styles.mainView}>
+            <View style={{...styles.mainView, paddingBottom: this.mainViewBottomPadding()}}>
                 {this.roomTitleComp()}
                 <ScrollView>
                     {this.userDateComp()}
@@ -679,6 +718,7 @@ class JoinRoom extends React.Component<Props, State>{
                 {this.state.showDateEnd && this.datePicker(this.state.index, 'date', 'end')}
                 {this.state.showTimeStart && this.datePicker(this.state.index, 'time', 'start')}
                 {this.state.showTimeEnd && this.datePicker(this.state.index, 'time', 'end')}
+                {this.ad()}
             </View>
         );
     }
@@ -691,6 +731,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4,
         height: height,
         flex: 1
+    },
+    ad: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        backgroundColor: '#f6f6ff'
     },
     roomTitleCont: {
         backgroundColor: '#eeeeee',
