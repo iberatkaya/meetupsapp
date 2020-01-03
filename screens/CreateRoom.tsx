@@ -299,7 +299,7 @@ class CreateRoom extends React.Component<Props, State>{
                             this.setState({ dates: dates });
                         }}
                         name="minus"
-                        size={32}
+                        size={28}
                         style={{ alignSelf: 'center' }}
                         color="black"
                     />
@@ -326,7 +326,7 @@ class CreateRoom extends React.Component<Props, State>{
                         });
                         this.setState({ dates: dates });
                     }}
-                    size={32}
+                    size={28}
                     color="red"
                     style={{ alignSelf: 'center' }}
                     name="plus"
@@ -361,7 +361,7 @@ class CreateRoom extends React.Component<Props, State>{
                             let date = new Date().getTime();
                             db.transaction((tx: any) => {
                                 tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [resjson.key, date], () => {
-                                    Clipboard.setString('https://meetupswithfriends.com/api/' + resjson.key);
+                                    Clipboard.setString('https://meetupswithfriends.com/' + resjson.key);
                                     this.props.addKey({ key: resjson.key, date: date });
                                     this.props.navigation.pop();
                                     ToastAndroid.show('Copied key to clipboard', ToastAndroid.LONG);

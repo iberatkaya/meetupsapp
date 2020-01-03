@@ -15,6 +15,7 @@
     "c": "cd android && ./gradlew clean"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.6.3",
     "@react-native-community/datetimepicker": "^2.1.0",
     "@types/lodash": "^4.14.144",
     "@types/react-native-vector-icons": "^6.4.4",
@@ -25,6 +26,7 @@
     "react": "16.9.0",
     "react-native": "0.61.3",
     "react-native-androide": "^1.1.0",
+    "react-native-app-intro-slider": "^3.0.0",
     "react-native-gesture-handler": "^1.5.0",
     "react-native-reanimated": "^1.4.0",
     "react-native-splash-screen": "^3.2.0",

@@ -1,15 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, StatusBar, TouchableOpacity, Clipboard, ScrollView, ToastAndroid } from 'react-native';
+// @ts-ignore
 import { Table, Row, TableWrapper, Cell } from 'react-native-table-component';
 import { NavigationStackProp } from 'react-navigation-stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SplashScreen from 'react-native-splash-screen';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+// @ts-ignore
 import { AdMobBanner } from 'react-native-androide';
-import {bannerid} from './appid';
+// @ts-ignore
+import {bannerid,demobannerid} from './appid';
 import moment from 'moment';
 import { setKeys } from './Actions';
+// @ts-ignore
 import SQLite from 'react-native-sqlite-2';
 const db = SQLite.openDatabase("history.db", '1.0', '', 1);
 

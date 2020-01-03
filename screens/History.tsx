@@ -5,7 +5,6 @@ import { NavigationStackProp } from 'react-navigation-stack';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import moment from 'moment';
-import { setKeys } from './Actions';
 
 type Props = {
     navigation: NavigationStackProp<{}>,
@@ -114,7 +113,6 @@ const mapStateToProps = (state: StateRedux) => {
 
 const mapDispatchToProps = (dispatch: any) => (
     bindActionCreators({
-        setKeys
     }, dispatch)
 );
 

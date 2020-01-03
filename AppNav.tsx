@@ -10,6 +10,7 @@ import JoinRoomScreen from './screens/JoinRoom';
 import HistoryScreen from './screens/History';
 import HelpScreen from './screens/Help';
 import DeepLinkProxyScreen from './screens/DeepLinkProxy';
+import IntroScreen from './screens/Intro';
 
 const { width, height } = Dimensions.get('window');
 
@@ -54,7 +55,7 @@ const Draw = createDrawerNavigator({
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name="history" size={24} color="#aaa" />
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', paddingLeft: 32, color: 'black' }}>History</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', paddingLeft: 32, color: '#333' }}>History</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -63,7 +64,7 @@ const Draw = createDrawerNavigator({
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name="help-circle-outline" size={24} color="#aaa" />
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', paddingLeft: 32, color: 'black' }}>Help</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', paddingLeft: 32, color: '#333' }}>Help</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -72,7 +73,7 @@ const Draw = createDrawerNavigator({
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name="email" size={24} color="#aaa" />
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', paddingLeft: 32, color: 'black' }}>Feedback</Text>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', paddingLeft: 32, color: '#333' }}>Feedback</Text>
                     </View>
                 </TouchableOpacity>
             </ScrollView>
@@ -99,6 +100,7 @@ const styles = StyleSheet.create({
 });
 
 const Enter = createSwitchNavigator({
+    Intro: IntroScreen,
     Home: Draw,
     DeepLinkProxy1: {
         screen: DeepLinkProxyScreen, 

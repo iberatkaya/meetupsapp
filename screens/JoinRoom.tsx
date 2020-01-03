@@ -5,10 +5,12 @@ import moment from 'moment';
 import { Header } from 'react-navigation-stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// @ts-ignore
 import SQLite from 'react-native-sqlite-2';
 import { connect } from 'react-redux';
+// @ts-ignore
 import { AdMobBanner } from 'react-native-androide';
-import { bannerid } from './appid';
+import { bannerid, demobannerid } from './appid';
 import { bindActionCreators } from 'redux';
 import { addKey } from './Actions';
 const db = SQLite.openDatabase("history.db", '1.0', '', 1);
@@ -72,7 +74,8 @@ type State = {
     intersections: Array<Intersections>,
     loading: boolean,
     formenter: object,
-    loadedAd: boolean
+    loadedAd: boolean,
+    joined: boolean
 };
 
 interface Intersections {
@@ -124,7 +127,8 @@ class JoinRoom extends React.Component<Props, State>{
             roomTitle: '',
             intersections: [],
             loading: true,
-            loadedAd: false
+            loadedAd: false,
+            joined: false
         };
     }
 
@@ -133,7 +137,7 @@ class JoinRoom extends React.Component<Props, State>{
     });
 
     fetchPeople = async () => {
-        try{
+        try {
             let res = await fetch('https://meetupswithfriends.com/api/' + this.state.key, {
                 headers: {
                     'Accept': 'application/json',
@@ -156,10 +160,10 @@ class JoinRoom extends React.Component<Props, State>{
                 persons.push({ dates: newdates, id: i, name: resjson[i].name });
             }
             let roomTitle = resjson[0].roomtitle;
-            this.setState({ persons: persons, roomTitle: roomTitle, loading: false }, () => {
+            this.setState({ persons: persons, roomTitle: roomTitle, loading: false, clickable: true }, () => {
                 this.calculateAvailableTime();
             });
-        }catch(e){
+        } catch (e) {
             ToastAndroid.show("An error occurred", ToastAndroid.LONG);
             this.props.navigation.pop();
         }
@@ -246,19 +250,19 @@ class JoinRoom extends React.Component<Props, State>{
                 newarr.push(newel);
             }
         }
-        for(let i=0; i<newarr.length; i++){
-            for(let j=0; j<newarr[i].personid.length-1; j++){
+        for (let i = 0; i < newarr.length; i++) {
+            for (let j = 0; j < newarr[i].personid.length - 1; j++) {
                 let person1 = newarr[i].personid[j];
-                for(let k=j+1; k<newarr[i].personid.length; k++){
+                for (let k = j + 1; k < newarr[i].personid.length; k++) {
                     let person2 = newarr[i].personid[k];
-                    if(person1 === person2)
+                    if (person1 === person2)
                         newarr[i].occurance--;
                 }
             }
         }
         let finalarray = [];
-        for(let i=0; i<newarr.length; i++){
-            if(newarr[i].occurance > 1)
+        for (let i = 0; i < newarr.length; i++) {
+            if (newarr[i].occurance > 1)
                 finalarray.push(newarr[i]);
         }
         return finalarray;
@@ -280,7 +284,7 @@ class JoinRoom extends React.Component<Props, State>{
                             return;
                         }
                         let olddate = this.state.dates[index].startDate;
-                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(),  olddate.getMinutes());
+                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(), olddate.getMinutes());
                         this.dateChanger(date, index, mode, type);
                     }}
                     minimumDate={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1, 0, 0)}
@@ -298,7 +302,7 @@ class JoinRoom extends React.Component<Props, State>{
                             return;
                         }
                         let olddate = this.state.dates[index].endDate;
-                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(),  olddate.getMinutes());
+                        let date = new Date(new Date(dateevent.nativeEvent.timestamp).getFullYear(), new Date(dateevent.nativeEvent.timestamp).getMonth(), new Date(dateevent.nativeEvent.timestamp).getDate(), olddate.getHours(), olddate.getMinutes());
                         this.dateChanger(date, index, mode, type);
                     }}
                     minimumDate={this.state.dates[index].startDate}
@@ -316,7 +320,7 @@ class JoinRoom extends React.Component<Props, State>{
                             return;
                         }
                         let olddate = this.state.dates[index].startDate;
-                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(),  new Date(dateevent.nativeEvent.timestamp).getMinutes());
+                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(), new Date(dateevent.nativeEvent.timestamp).getMinutes());
                         this.dateChanger(date, index, mode, type);
                     }}
                     is24Hour={true}
@@ -334,7 +338,7 @@ class JoinRoom extends React.Component<Props, State>{
                             return;
                         }
                         let olddate = this.state.dates[index].endDate;
-                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(),  new Date(dateevent.nativeEvent.timestamp).getMinutes());
+                        let date = new Date(olddate.getFullYear(), olddate.getMonth(), olddate.getDate(), new Date(dateevent.nativeEvent.timestamp).getHours(), new Date(dateevent.nativeEvent.timestamp).getMinutes());
                         this.dateChanger(date, index, mode, type);
                     }}
                     is24Hour={true}
@@ -466,7 +470,7 @@ class JoinRoom extends React.Component<Props, State>{
                             this.setState({ dates: dates });
                         }}
                         name="minus"
-                        size={32}
+                        size={28}
                         style={{ alignSelf: 'center' }}
                         color="black"
                     />
@@ -493,7 +497,7 @@ class JoinRoom extends React.Component<Props, State>{
                         });
                         this.setState({ dates: dates });
                     }}
-                    size={32}
+                    size={28}
                     color="red"
                     style={{ alignSelf: 'center' }}
                     name="plus"
@@ -505,7 +509,7 @@ class JoinRoom extends React.Component<Props, State>{
     floatingButton = () => {
         return (
             <TouchableOpacity
-                style={{...styles.floatingButton, bottom: this.floatingButtonBottom()}}
+                style={{ ...styles.floatingButton, bottom: this.floatingButtonBottom() }}
                 disabled={!this.state.clickable}
                 onPress={async () => {
                     const value = (this.form as any).getValue();
@@ -526,10 +530,13 @@ class JoinRoom extends React.Component<Props, State>{
                         let date = new Date().getTime();
                         db.transaction((tx: any) => {
                             tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [this.state.key, date], () => {
-                                Clipboard.setString('https://meetupswithfriends.com/api/' + this.state.key);
+                                Clipboard.setString('https://meetupswithfriends.com/' + this.state.key);
                                 this.props.addKey({ key: this.state.key, date: date });
                                 ToastAndroid.show('Copied key to clipboard', ToastAndroid.LONG);
-                                this.props.navigation.pop();
+                                this.setState({joined: true}, async () => {
+                                    this.fetchPeople()
+                                })
+                                //this.props.navigation.pop();
                             }, (err: any) => { console.log(err); });
                         });
                     }
@@ -582,10 +589,10 @@ class JoinRoom extends React.Component<Props, State>{
     }
 
     stringAfterSlash = (str: string) => {
-        if(!str.includes("/"))
+        if (!str.includes("/"))
             return str;
         let i = str.lastIndexOf('/');
-        return str.slice(i+1, str.length);
+        return str.slice(i + 1, str.length);
     }
 
     enterform = createRef<typeof Form>();
@@ -593,7 +600,7 @@ class JoinRoom extends React.Component<Props, State>{
         return (
             <>
                 <View style={{ marginHorizontal: 2, paddingHorizontal: 12, borderRadius: 24, paddingTop: 4, backgroundColor: '#eee', marginVertical: 6 }}>
-                    <Text style={{paddingLeft: 8, fontSize: 18, marginTop: 4, marginBottom: 2}}>Key</Text>
+                    <Text style={{ paddingLeft: 8, fontSize: 18, marginTop: 4, marginBottom: 2 }}>Key</Text>
                     <Form
                         options={optionskey}
                         type={EnterStruct}
@@ -622,16 +629,26 @@ class JoinRoom extends React.Component<Props, State>{
 
 
     intersectionsList = () => {
-        let intersections = this.state.intersections;
-        if(intersections.length === 0)
-            return (<View/>);
+        let intersections = this.state.intersections.sort((a, b) => (b.occurance-a.occurance));
+        if (intersections.length === 0)
+            return (
+                <View style={styles.intersectionList}>
+                    <Text style={styles.intersectionTitle}>There are no intersections.</Text>
+                </View>
+            );
         return (
             <View style={styles.intersectionList}>
                 <Text style={styles.intersectionTitle}>Intersections</Text>
                 {intersections.map((item) => {
+                    let people = "";
+                    for (let a = 0; a < item.personid.length; a++) {
+                        let b = item.personid[a];
+                        people += this.state.persons[b].name;
+                        people += a != item.personid.length - 1 ? ", " : "";
+                    }
                     return (
                         <View>
-                            <Text style={styles.intersectionText}>{item.occurance} people are available at {moment(this.roundDate(new Date(item.start))).format('MMM DD, YYYY HH:mm')} - {moment(this.roundDate(new Date(item.end))).format('MMM DD, YYYY HH:mm')}</Text>
+                            <Text style={styles.intersectionText}>{item.occurance} people ({people}) are available at {moment(this.roundDate(new Date(item.start))).format('MMM DD, YYYY HH:mm')} - {moment(this.roundDate(new Date(item.end))).format('MMM DD, YYYY HH:mm')}</Text>
                         </View>
                     )
                 })}
@@ -650,14 +667,14 @@ class JoinRoom extends React.Component<Props, State>{
     }
 
     mainViewBottomPadding = () => {
-        if(this.state.loadedAd)
+        if (this.state.loadedAd)
             return 62;
         else
             return 0;
     }
 
     floatingButtonBottom = () => {
-        if(this.state.loadedAd)
+        if (this.state.loadedAd)
             return 66;
         else
             return 22;
@@ -670,14 +687,14 @@ class JoinRoom extends React.Component<Props, State>{
                     adSize="fullBanner"
                     adUnitID={bannerid}
                     onFailedToLoad={(m: string) => console.log(m)}
-                    onLoad={() => { 
-                        this.setState({loadedAd: true});
+                    onLoad={() => {
+                        this.setState({ loadedAd: true });
                     }}
                 />
             </View>
         );
     }
-    
+
     render() {
         if (this.state.key === 'NOAPIKEY')
             return (
@@ -698,11 +715,20 @@ class JoinRoom extends React.Component<Props, State>{
                 </View>
             );
         return (
-            <View style={{...styles.mainView, paddingBottom: this.mainViewBottomPadding()}}>
+            <View style={{ ...styles.mainView, paddingBottom: this.mainViewBottomPadding() }}>
                 {this.roomTitleComp()}
                 <ScrollView>
-                    {this.userDateComp()}
-                    {this.intersectionsList()}
+                    {!this.state.joined ?
+                        this.userDateComp()
+                        :
+                        <View/>
+                    }
+                    {this.state.persons.length > 1
+                        ?
+                        this.intersectionsList()
+                        :
+                        <View />
+                    }
                     {this.peopleComp()}
                 </ScrollView>
                 {
@@ -711,7 +737,11 @@ class JoinRoom extends React.Component<Props, State>{
                         :
                         this.loadingComp()
                 }
-                {this.floatingButton()}
+                {!this.state.joined ?
+                    this.floatingButton()
+                    :
+                    <View/>
+                }
                 {this.state.showDateStart && this.datePicker(this.state.index, 'date', 'start')}
                 {this.state.showDateEnd && this.datePicker(this.state.index, 'date', 'end')}
                 {this.state.showTimeStart && this.datePicker(this.state.index, 'time', 'start')}
@@ -753,14 +783,14 @@ const styles = StyleSheet.create({
         marginVertical: 4,
     },
     intersectionTitle: {
-        fontSize: 20,
+        fontSize: 21,
         borderBottomWidth: 1,
         borderBottomColor: '#bbb',
         marginBottom: 4,
         textAlign: 'center'
     },
     intersectionText: {
-        fontSize: 18
+        fontSize: 17
     },
     peopeInRoom: {
         textAlign: 'center',
