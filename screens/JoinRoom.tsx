@@ -5,11 +5,12 @@ import moment from 'moment';
 import { Header } from 'react-navigation-stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Toast from "react-native-root-toast";
 // @ts-ignore
 import SQLite from 'react-native-sqlite-2';
 import { connect } from 'react-redux';
 // @ts-ignore
-import { AdMobBanner } from 'react-native-androide';
+import { AdMobBanner } from 'react-native-admob';
 import { bannerid, demobannerid } from './appid';
 import { bindActionCreators } from 'redux';
 import { addKey } from './Actions';
@@ -164,7 +165,7 @@ class JoinRoom extends React.Component<Props, State>{
                 this.calculateAvailableTime();
             });
         } catch (e) {
-            ToastAndroid.show("An error occurred", ToastAndroid.LONG);
+            Toast.show("An error occurred");
             this.props.navigation.pop();
         }
     }
@@ -353,7 +354,7 @@ class JoinRoom extends React.Component<Props, State>{
         let dates = [...this.state.dates];
         if (type === "end") {
             if (dates[index].startDate.getTime() >= date.getTime()) {
-                ToastAndroid.show('End Date cannot be\nsmaller than Start Date', ToastAndroid.LONG);
+                Toast.show('End Date cannot be\nsmaller than Start Date');
                 if (mode === 'time')
                     this.setState({ showTimeEnd: false });
                 else if (mode === 'date')
@@ -532,7 +533,7 @@ class JoinRoom extends React.Component<Props, State>{
                             tx.executeSql('INSERT INTO HISTORY (apikey, date) VALUES(?, ?)', [this.state.key, date], () => {
                                 Clipboard.setString('https://meetupswithfriends.com/' + this.state.key);
                                 this.props.addKey({ key: this.state.key, date: date });
-                                ToastAndroid.show('Copied key to clipboard', ToastAndroid.LONG);
+                                Toast.show('Copied key to clipboard');
                                 this.setState({joined: true}, async () => {
                                     this.fetchPeople()
                                 })
@@ -686,8 +687,8 @@ class JoinRoom extends React.Component<Props, State>{
                 <AdMobBanner
                     adSize="fullBanner"
                     adUnitID={bannerid}
-                    onFailedToLoad={(m: string) => console.log(m)}
-                    onLoad={() => {
+                    onAdFailedToLoad={(m: string) => console.log(m)}
+                    onAdLoaded={() => {
                         this.setState({ loadedAd: true });
                     }}
                 />

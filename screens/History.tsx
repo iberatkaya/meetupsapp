@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Clipboard, ScrollView, ToastAndroid } from 'react-native';
+//@ts-ignore
 import { Table, Row, TableWrapper, Cell } from 'react-native-table-component';
 import { NavigationStackProp } from 'react-navigation-stack';
 import { connect } from 'react-redux';

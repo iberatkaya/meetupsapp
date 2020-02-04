@@ -1,14 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar, TouchableOpacity, Clipboard, ScrollView, ToastAndroid } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, Clipboard, ScrollView } from 'react-native';
 // @ts-ignore
 import { Table, Row, TableWrapper, Cell } from 'react-native-table-component';
 import { NavigationStackProp } from 'react-navigation-stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Toast from "react-native-root-toast";
 import SplashScreen from 'react-native-splash-screen';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 // @ts-ignore
-import { AdMobBanner } from 'react-native-androide';
+import { AdMobBanner } from 'react-native-admob';
 // @ts-ignore
 import {bannerid,demobannerid} from './appid';
 import moment from 'moment';
@@ -93,7 +94,7 @@ class Home extends React.Component<Props, State>{
             style={{ marginLeft: 4 }}
             onLongPress={() => {
                 Clipboard.setString('https://www.meetupswithfriends.com/' + data);
-                ToastAndroid.show('Copied to clipboard', ToastAndroid.LONG);
+                Toast.show('Copied to clipboard');
             }}
             onPress={() => {
                 this.props.navigation.navigate('JoinRoom', { key: data });
@@ -139,8 +140,8 @@ class Home extends React.Component<Props, State>{
                 <AdMobBanner
                     adSize="fullBanner"
                     adUnitID={bannerid}
-                    onFailedToLoad={(m: string) => console.log(m)}
-                    onLoad={() => { this.setState({ loadedAd: true }); }}
+                    onAdFailedToLoad={(m: string) => console.log(m)}
+                    onAdLoaded={() => { this.setState({ loadedAd: true }); }}
                 />
             </View>
         );

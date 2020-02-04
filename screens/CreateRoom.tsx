@@ -1,12 +1,15 @@
 import React, { createRef } from 'react';
-import { View, Text, ScrollView, Clipboard, TouchableOpacity, StatusBar, Dimensions, ToastAndroid, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Clipboard, TouchableOpacity, StatusBar, Dimensions, StyleSheet, ActivityIndicator } from 'react-native';
 import { NavigationStackProp } from 'react-navigation-stack';
 import moment from 'moment';
 import { Header } from 'react-navigation-stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Toast from "react-native-root-toast";
+//@ts-ignore
 import SQLite from 'react-native-sqlite-2';
-import { AdMobBanner } from 'react-native-androide';
+//@ts-ignore
+import { AdMobBanner } from 'react-native-admob';
 import { bannerid } from './appid';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -195,7 +198,7 @@ class CreateRoom extends React.Component<Props, State>{
         let dates = [...this.state.dates];
         if (type === "end") {
             if (dates[index].startDate.getTime() >= date.getTime()) {
-                ToastAndroid.show('End Date cannot be\nsmaller than Start Date', ToastAndroid.LONG);
+                Toast.show('End Date cannot be\nsmaller than Start Date');
                 if (mode === 'time')
                     this.setState({ showTimeEnd: false });
                 else if (mode === 'date')
@@ -364,12 +367,12 @@ class CreateRoom extends React.Component<Props, State>{
                                     Clipboard.setString('https://meetupswithfriends.com/' + resjson.key);
                                     this.props.addKey({ key: resjson.key, date: date });
                                     this.props.navigation.pop();
-                                    ToastAndroid.show('Copied key to clipboard', ToastAndroid.LONG);
+                                    Toast.show('Copied key to clipboard');
                                 }, (err: any) => { console.log(err); });
                             });
                         }
                     }catch(e){
-                        ToastAndroid.show("An error occurred", ToastAndroid.LONG);
+                        Toast.show("An error occurred");
                         this.props.navigation.pop();
                     }
                 }}
@@ -411,8 +414,8 @@ class CreateRoom extends React.Component<Props, State>{
                 <AdMobBanner
                     adSize="fullBanner"
                     adUnitID={bannerid}
-                    onFailedToLoad={(m: string) => console.log(m)}
-                    onLoad={() => { 
+                    onAdFailedToLoad={(m: string) => console.log(m)}
+                    onAdLoaded={() => { 
                         this.setState({loadedAd: true});
                     }}
                 />
