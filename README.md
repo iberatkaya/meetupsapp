@@ -5,7 +5,7 @@
 
 > MeetUps is a group meetup organizer. Select your available dates and times, and create or join a room. Once you create a room, you can send the link to your friends to let them join your room. MeetUps will then show you the available time slots for your next meetup!
 
-### 🏠 [Homepage](https://play.google.com/store/apps/details?id=com.kaya.meetupapp)
+### 🏠 [Play Store](https://play.google.com/store/apps/details?id=com.kaya.meetupapp) - [App Store](https://apps.apple.com/us/app/meetups-with-friends/id1498308902)
 
 ## Install
 
@@ -17,6 +17,7 @@ npm install
 
 ```sh
 react-native run-android
+react-native run-ios
 ```
 
 ## Author
